@@ -144,15 +144,15 @@ class LoadStoreUnit(pl_width: Int) extends Module with BOOMCoreParameters
    val laq_executed  = Reg(Vec(num_ld_entries, Bool())) // load has been issued to memory (immediately set this bit)
    val laq_succeeded = Reg(Vec(num_ld_entries, Bool())) // load has returned from memory, but may still have an ordering failure
    val laq_failure   = Reg(init = Vec.fill(num_ld_entries) { Bool(false) })  // ordering fail, must retry (at commit time, which requires a rollback)
-   val laq_uop       = Reg(Vec(num_ld_entries, new MicroOp()))
+   val laq_uop       = Mem(num_ld_entries, new MicroOp())
    //laq_uop.stq_idx between oldest and youngest (dep_mask can't establish age :( ), "aka store coloring" if you're Intel
 //   val laq_request   = Vec.fill(num_ld_entries) { Reg(resetVal = Bool(false)) } // TODO sleeper load requesting issue to memory (perhaps stores broadcast, sees its store-set finished up)
 
 
    // track window of stores we depend on
-   val laq_st_dep_mask        = Reg(Vec(num_ld_entries, Bits(width = num_st_entries))) // list of stores we might depend (cleared when a store commits)
+   val laq_st_dep_mask        = Mem(num_ld_entries, Bits(width = num_st_entries)) // list of stores we might depend (cleared when a store commits)
    val laq_forwarded_std_val  = Reg(Vec(num_ld_entries, Bool()))
-   val laq_forwarded_stq_idx  = Reg(Vec(num_ld_entries, UInt(width = MEM_ADDR_SZ)))    // which store did get store-load forwarded data from? compare later to see I got things correct
+   val laq_forwarded_stq_idx  = Mem(num_ld_entries, UInt(width = MEM_ADDR_SZ))    // which store did get store-load forwarded data from? compare later to see I got things correct
    val debug_laq_put_to_sleep = Reg(Vec(num_ld_entries, Bool()))                       // did a load get put to sleep at least once?
 //   val laq_st_wait_mask = Vec.fill(num_ld_entries) { Reg() { Bits(width = num_st_entries) } }// TODO list of stores we might depend on whose addresses are not yet computed
 //   val laq_block_val    = Vec.fill(num_ld_entries) { Reg() { Bool() } }                     // TODO something is blocking us from executing
@@ -165,10 +165,10 @@ class LoadStoreUnit(pl_width: Int) extends Module with BOOMCoreParameters
 
    // Store-Data Queue
    val sdq_val       = Reg(Vec(num_st_entries, Bool()))
-   val sdq_data      = Reg(Vec(num_st_entries, Bits(width = xLen)))
+   val sdq_data      = Mem(num_st_entries, Bits(width = xLen))
 
    // Shared Store Queue Information
-   val stq_uop       = Reg(Vec(num_st_entries, new MicroOp()))
+   val stq_uop       = Mem(num_st_entries, new MicroOp())
    // TODO not convinced I actually need stq_entry_val; I think other ctrl signals gate this off
    val stq_entry_val = Reg(Vec(num_st_entries, Bool())) // this may be valid, but not TRUE (on exceptions, this doesn't get cleared but STQ_TAIL gets moved)
    val stq_executed  = Reg(Vec(num_st_entries, Bool())) // sent to mem

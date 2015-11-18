@@ -43,8 +43,8 @@ class BTB(fetchWidth: Int) extends Module with BTBParameters
   val valid = Vec.fill(entries){Reg(init=Bool(false))}
   val hits = Vec.fill(entries){Bool()}
   val updates = Vec.fill(entries){Bool()}
-  val targets = Vec.fill(entries){Reg(UInt())}
-  val hit_idxs = Vec.fill(entries){UInt()}
+  val targets = Mem(entries, UInt())
+  val hit_idxs = Mem(entries, UInt())
   val anyUpdate = updates.toBits.orR
 
   val random_way = rocket.Random(entries)

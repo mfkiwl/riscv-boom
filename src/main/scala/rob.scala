@@ -266,7 +266,7 @@ class Rob(width: Int
    // store expensive branch prediction information here (per br-tag)
 //   val pred_table = Mem(new BranchPredictionResp, num_rob_rows)
    // TODO use Mem(), but it chokes on the undefines in VCS
-   val pred_table = Vec.fill(num_rob_rows) {Reg(new BranchPredictionResp)}
+   val pred_table = Mem(num_rob_rows, new BranchPredictionResp)
    when (io.dis_mask.reduce(_|_))
    {
       pred_table(rob_tail) := io.dis_pred_info
@@ -283,8 +283,8 @@ class Rob(width: Int
 
       // one bank
       val rob_val       = Reg(init = Vec.fill(num_rob_rows){Bool(false)})
-      val rob_bsy       = Mem(num_rob_rows, Bool())
-      val rob_uop       = Reg(Vec(num_rob_rows, new MicroOp())) // one write port - dispatch
+      val rob_bsy       = Reg(Vec(num_rob_rows, Bool()))
+      val rob_uop       = Mem(num_rob_rows, new MicroOp()) // one write port - dispatch
                                                            // fake write ports - clearing on commit,
                                                            // rollback, branch_kill
       val rob_exception = Mem(num_rob_rows, Bool())        // TODO consolidate into the com_uop? what's the best for Chisel?

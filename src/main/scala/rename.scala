@@ -179,7 +179,7 @@ class RenameFreeList(num_phys_registers: Int // number of physical registers
 
    // track all allocations that have occurred since branch passed by
    // can quickly reset pipeline on branch mispredict
-   val allocation_lists = Reg(Vec(MAX_BR_COUNT, Bits(width = num_phys_registers)))
+   val allocation_lists = Mem(MAX_BR_COUNT, Bits(width = num_phys_registers))
 
    val enq_mask = Wire(Vec(pl_width, Bits(width = num_phys_registers))) // TODO why is this a Vec? can I do this all on one bit-vector?
 
