@@ -290,6 +290,14 @@ class Rob(width: Int
       val rob_exception = Mem(num_rob_rows, Bool())        // TODO consolidate into the com_uop? what's the best for Chisel?
       val rob_fflags    = Mem(num_rob_rows, Bits(width=rocket.FPConstants.FLAGS_SZ))
 
+      // Naming for debugging
+      rob_bsy setName s"rob_bsy_${w}"
+      rob_fflags setName s"rob_fflags_${w}"
+      rob_exception setName s"rob_exception_${w}"
+      rob_val.zipWithIndex map {case (entry, idx) => entry.getNode setName s"rob_val_${w}_${idx}"}
+      rob_uop.zipWithIndex map {case (entry, idx) => 
+         entry.flatten foreach {case (name, t) => t.getNode setName s"rob_uop_${w}_${idx}_${name}"}}
+
       //-----------------------------------------------
       // Dispatch: Add Entry to ROB
 
